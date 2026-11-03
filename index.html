@@ -445,7 +445,7 @@
   <div class="brand">
     <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
     <div class="brand-txt">
-      <div class="brand-row"><h1>FuelGrid Europe</h1><span class="ver">v6.13</span></div>
+      <div class="brand-row"><h1>FuelGrid Europe</h1><span class="ver">v6.14</span></div>
       <span class="snapshot" id="snapshot">Loading live data…</span>
     </div>
   </div>
@@ -548,6 +548,7 @@
   </div>
   <div class="divider"></div>
   <h2 id="natTitle">National average</h2>
+  <div id="natBulletin" style="font-size:11px;color:var(--muted);margin:-2px 0 6px;font-variant-numeric:tabular-nums;display:none"></div>
   <div id="natTable"></div>
   <div class="divider"></div>
   <div class="legend">
@@ -854,6 +855,13 @@ var cheapest=null, colorFor=null;
 var LIVE={diesel:false,hvo:false,ev:false};
 var SNAP='Mon 29 Jun 2026';
 var WOB_DATE=null;
+function fmtWob(iso){
+ if(!iso)return '';
+ var m=String(iso).match(/^(\d{4})-(\d{2})-(\d{2})/);
+ if(!m)return String(iso);
+ var mon=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m[2],10)-1]||m[2];
+ return parseInt(m[3],10)+' '+mon+' '+m[1];
+}
 var COUNTRY_ON={};CC_ORDER.forEach(function(cc){COUNTRY_ON[cc]=true;});
 var MANUAL={};
 
@@ -1071,6 +1079,11 @@ function refreshCore(){
 
  /* national table */
  el('natTitle').textContent='National average \u00b7 '+m.label;
+ var nb=el('natBulletin');
+ if(nb){
+  if(currentFuel==='diesel'&&WOB_DATE){nb.textContent='EU bulletin week: '+fmtWob(WOB_DATE);nb.style.display='block';}
+  else{nb.style.display='none';}
+ }
  var rows='';
  CC_ORDER.slice().sort(function(x,y){return COUNTRY[x].name.localeCompare(COUNTRY[y].name);}).forEach(function(cc){
   var a=AVG[currentFuel][cc],man=false;
